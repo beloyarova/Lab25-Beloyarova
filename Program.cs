@@ -1,118 +1,73 @@
-﻿// using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-// // Шаг 3
-// try
-// {
-//     Console.Write("Введите целое число: ");
-//     int number = int.Parse(Console.ReadLine());
-//     Console.WriteLine($"Число: {number}");
-// }
-// catch (FormatException)
-// {
-//     Console.WriteLine("Ошибка: введите целое число");
-// }
+int count = ReadCount();
+List<int> scores = new List<int>();
+int errors = 0;
 
-// Console.WriteLine("Программа продолжает работу");
-
-// try
-// {
-//     Console.Write("Введите целое число: ");
-//     int number = int.Parse(Console.ReadLine() ?? "");
-//     Console.WriteLine(number);
-// }
-// catch (FormatException)
-// {
-//     Console.WriteLine("Ошибка: введите целое число");
-// }
-
-// // Шаг 4
-// try
-// {
-//     Console.Write("Делимое: ");
-//     int first = int.Parse(Console.ReadLine() ?? "");
-
-//     Console.Write("Делитель: ");
-//     int second = int.Parse(Console.ReadLine() ?? "");
-
-//     int result = first / second;
-//     Console.WriteLine($"Результат: {result}");
-// }
-// catch (FormatException)
-// {
-//     Console.WriteLine("Ошибка: введите целое число");
-// }
-// catch (OverflowException)
-// {
-//     Console.WriteLine("Ошибка: число или результат вне диапазона int");
-// }
-// catch (DivideByZeroException)
-// {
-//     Console.WriteLine("Ошибка: деление на ноль");
-// }
-
-// Шаг 5
-// void AddScore(List<int> scores, int score)
-// {
-//     if (score < 0 || score > 100)
-//     {
-//         throw new ArgumentOutOfRangeException(nameof(score), "Результат должен быть от 0 до 100");
-//     }
-//     scores.Add(score);
-// }
-
-// List<int> testScores = new List<int>();
-// try
-// {
-//  AddScore(testScores, 80);
-//  AddScore(testScores, -5);
-//  AddScore(testScores, 90);
-// }
-// catch (ArgumentOutOfRangeException)
-// {
-//  Console.WriteLine("Ошибка: результат должен быть от 0 до 100");
-// }
-// Console.WriteLine($"Сохранено результатов: {testScores.Count}");
-
-// void AddScore(List<int> scores, int score)
-// {
-//     if (score < 0 || score > 100)
-//     {
-//         throw new ArgumentOutOfRangeException(nameof(score));
-//     }
-//     scores.Add(score);
-// }
-
-// // Шаг 6
-// try
-// {
-//     Console.Write("Введите целое число: ");
-//     int number = int.Parse(Console.ReadLine() ?? "");
-//     Console.WriteLine($"Число: {number}");
-// }
-// catch (FormatException)
-// {
-//     Console.WriteLine("Ошибка: введите целое число");
-// }
-// catch (OverflowException)
-// {
-//     Console.WriteLine("Ошибка: число вне диапазона int");
-// }
-// finally
-// {
-//     Console.WriteLine("Попытка ввода завершена");
-// }
-
-// Шаг 7
-Console.Write("Введите целое число: ");
-string input = Console.ReadLine() ?? "";
-
-if (int.TryParse(input, out int number))
+while (scores.Count < count)
 {
-    Console.WriteLine($"Число: {number}");
+    try
+    {
+        Console.Write($"Результат {scores.Count + 1}: ");
+        int score = int.Parse(Console.ReadLine() ?? "");
+        AddScore(scores, score);
+        Console.WriteLine("Результат сохранён");
+    }
+    catch (FormatException)
+    {
+        errors++;
+        Console.WriteLine("Ошибка: введите целое число");
+    }
+    catch (OverflowException)
+    {
+        errors++;
+        Console.WriteLine("Ошибка: число вне диапазона int");
+    }
+    catch (ArgumentOutOfRangeException)
+    {
+        errors++;
+        Console.WriteLine("Ошибка: результат должен быть от 0 до 100");
+    }
+    finally
+    {
+        Console.WriteLine("Попытка ввода завершена");
+    }
+}
+
+Console.WriteLine();
+Console.WriteLine(">>> Итоги ввода <<<");
+Console.WriteLine($"Сохранено результатов: {scores.Count}");
+Console.WriteLine($"Ошибок ввода результатов: {errors}");
+Console.WriteLine("Результаты:");
+if (scores.Count == 0)
+{
+    Console.WriteLine("Список пуст");
 }
 else
 {
-    Console.WriteLine("Не удалось прочитать целое число");
+    for (int i = 0; i < scores.Count; i++)
+    {
+        Console.WriteLine($"{i}: {scores[i]}");
+    }
+}
+Console.WriteLine($"Сумма: {SumScore(scores)}");
+if (scores.Count == 0)
+{
+    Console.WriteLine("Среднее не вычисляется: список пуст");
+}
+else
+{
+    double average = (double)SumScore(scores) / scores.Count;
+    Console.WriteLine($"Среднее: {average}");
+}
+
+void AddScore(List<int> scores, int score)
+{
+    if (score < 0 || score > 100)
+    {
+        throw new ArgumentOutOfRangeException(nameof(score), "Результат должен быть от 0 до 100");
+    }
+    scores.Add(score);
 }
 
 int ReadCount()
@@ -130,12 +85,33 @@ int ReadCount()
     }
 }
 
-string input = "abc";
-if (int.TryParse(input, out int number))
+int SumScore(List<int> scores)
 {
-    Console.WriteLine($"Принято число: {number}");
+    int total = 0;
+    for (int i = 0; i < scores.Count; i++)
+    {
+        total += scores[i];
+    }
+    return total;
 }
-else
+
+// Самостоятельное задание 3
+double CalculateAverage(List<int> scores)
 {
-    Console.WriteLine("Не удалось прочитать целое число");
+    if (scores.Count == 0)
+    {
+        throw new InvalidOperationException("Список пуст");
+    }
+    int total = SumScore(scores);
+    return (double)total / scores.Count;
+}
+
+try
+{
+    double average = CalculateAverage(scores);
+    Console.WriteLine($"Среднее: {average}");
+}
+catch(InvalidOperationException)
+{
+    Console.WriteLine("Среднее не вычисляется: список пуст");
 }
